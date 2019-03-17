@@ -27,6 +27,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.Point;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -36,13 +37,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableModel;
+import javax.swing.JInternalFrame;
 
 import riscVivid.asm.Labels;
 import riscVivid.datatypes.uint32;
 import riscVivid.exception.MemoryException;
 import riscVivid.gui.MainFrame;
 import riscVivid.gui.Preference;
-import riscVivid.gui.command.systemLevel.CommandLoadFrameConfigurationSysLevel;
 import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
 import riscVivid.gui.internalframes.factories.InternalFrameFactory;
 import riscVivid.gui.internalframes.factories.tableFactories.MemoryTableFactory;
@@ -74,18 +75,15 @@ public final class MemoryFrame extends OpenDLXSimInternalFrame implements Action
     public void update()
     {
         TableModel model = memoryTable.getModel();
-        //get start-addr = first address in the memory table
         if (model.getColumnCount() > 0)
         {
-            String startAddrString = model.getValueAt(0, 0).toString();
-
             try
             {
                 for (int i = 0; i < model.getRowCount(); ++i)
                 {
                     final uint32 uint_val = MainFrame.getInstance().
                     	getOpenDLXSim().getPipeline().getMainMemory().
-                    	read_u32(new uint32(Integer.parseInt(startAddrString.substring(2), 16) + i * 4), false);
+                    	read_u32(new uint32(startAddr + i * 4), false);
                     final Object value;
                     if (Preference.displayMemoryAsHex())
                         value = uint_val.getValueAsHexString();
@@ -112,14 +110,14 @@ public final class MemoryFrame extends OpenDLXSimInternalFrame implements Action
         memoryTable.setFillsViewportHeight(true);
         TableSizeCalculator.setDefaultMaxTableSize(scrollpane, memoryTable, TableSizeCalculator.SET_SIZE_WIDTH);
         add(scrollpane, BorderLayout.CENTER);
-
+        
         //input
         JPanel inputPanel = new JPanel();
         addrLabel = new JLabel("start addr");
         inputPanel.add(addrLabel);
         addrInput = new JTextField(10);
         addrInput.addKeyListener(this);
-        addrInput.setText("" + startAddr);
+        addrInput.setText("0x" + Integer.toHexString(startAddr));
         addrInput.addFocusListener(this);
         inputPanel.add(addrInput);
         rowLabel = new JLabel("rows");
@@ -150,36 +148,66 @@ public final class MemoryFrame extends OpenDLXSimInternalFrame implements Action
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        try
-        {
-            Integer value = ValueInput.getValueSilent(addrInput.getText());
-            if (value != null)
-                startAddr = value;
-
-            value = ValueInput.getValueSilent(rowInput.getText());
-            if (value != null)
-                rows = value;
-
-            clean();
-            InternalFrameFactory.getInstance().createMemoryFrame(mf);
-            new CommandLoadFrameConfigurationSysLevel(mf).execute();
-        }
-        catch (Exception ex)
-        {
-            boolean error = true;
-            if (Labels.labels != null)
-            {
-                if (Labels.labels.containsKey(addrInput.getText()))
+        try {
+        	Integer newStartAddr;
+        	try {
+                newStartAddr = ValueInput.getValueSilent(addrInput.getText());
+        	} catch(NumberFormatException ex) { // addrInput is possibly a label
+        		if (Labels.labels != null && Labels.labels.containsKey(addrInput.getText()))
+        			   newStartAddr = (Integer) Labels.labels.get(addrInput.getText());
+        		else 
+        			throw new Exception();
+        	}
+        	// Test if newStartAddress is aligned; only set startAddr if that's the case
+        	if (newStartAddr != null) {
+		    	try {
+		    		MainFrame.getInstance().
+		    		getOpenDLXSim().getPipeline().getMainMemory().
+		    		read_u32(new uint32(newStartAddr), false);
+		    		// if successful, set startAddr to new one
+		    		startAddr = newStartAddr;
+		    	} catch (MemoryException ex) {
+		            mf.getPipelineExceptionHandler().handlePipelineExceptions(ex);
+		            return;
+		    	}
+        	}
+        	
+            Integer newRows = ValueInput.getValueSilent(rowInput.getText());
+            if (newRows == null)
+            	newRows = rows;
+        	// if number of rows stays the same, only update the table
+        	if (newRows == rows) { 
+        	    addrInput.setText("0x" + Integer.toHexString(startAddr));
+        	    // update row numbers
+                TableModel model = memoryTable.getModel();
+                for (int i = 0; i < model.getRowCount(); ++i)
                 {
-                    startAddr = (Integer) Labels.labels.get(addrInput.getText());
-                    clean();
-                    InternalFrameFactory.getInstance().createMemoryFrame(mf);
-                    new CommandLoadFrameConfigurationSysLevel(mf).execute();
-                    error = false;
+                    model.setValueAt(new uint32(startAddr + i * 4).getValueAsHexString(), i, 0);
                 }
-            }
+                // update values
+        		update();
+        	} 
+        	else // if number of rows changes, replace the Memory Frame with a new one and set it on top
+        	{
+        		rows = newRows;
+        		Point lastLocation = this.getLocation();
 
-            if (error)
+                clean();
+                InternalFrameFactory.getInstance().createMemoryFrame(mf);
+                // next command is commented because it resets the order and positions of
+                // the internal frames without any benefit
+                //new CommandLoadFrameConfigurationSysLevel(mf).execute();
+               
+                // find new MemoryFrame, restore the old position, put it on top
+               for (JInternalFrame f : mf.getinternalFrames()) {
+            	   if (f instanceof MemoryFrame) {
+            		   f.setLocation(lastLocation);
+                       f.setSelected(true);
+                       break;
+            	   }
+               }
+            }
+        } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "for input only hex (0x..) " +
                         "address, decimal address or label (e.g. \"main\") allowed");
         }
