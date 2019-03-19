@@ -46,9 +46,8 @@ public class Preference
 
     public static boolean displayMemoryAsHex()
     {
-        // TODO: Add GUI switch
-        // boolean isHex = pref.getBoolean(displayMemoryAsHex, true);
-        return true;
+        boolean isHex = pref.getBoolean(displayMemoryAsHex, true);
+        return isHex;
     }
 
     public static boolean displayRegistersAsHex()
