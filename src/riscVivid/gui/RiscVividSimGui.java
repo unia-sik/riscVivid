@@ -25,6 +25,9 @@ import java.awt.Font;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import riscVivid.gui.command.userLevel.CommandChangeFontSize;
+import riscVivid.gui.util.MWheelFontSizeChanger;
+
 public class RiscVividSimGui
 {
 
@@ -60,6 +63,10 @@ public class RiscVividSimGui
         setLookAndFeelWithoutTreeUpdate(lafClassName);
 
         MainFrame.getInstance();
+
+        // Font size options: set initial font size
+        CommandChangeFontSize.setFontSize(Preference.getFontSize());
+        MWheelFontSizeChanger.getInstance().add(MainFrame.getInstance());
     }
 
     //set look and feel, but do not update the Swing Component Tree

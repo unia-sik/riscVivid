@@ -41,6 +41,8 @@ public class Preference
     public static final String displayMemoryAsHex = "displayMemoryAsHex";
     public static final String showExitMessage = "showexitmessage";
     public static final String lookAndFeel = "lookandfeel";
+    public static final String fontSize = "fontsize";
+
     // TODO implement option
     public static final String displayRegistersAsHex = "displayRegistersAsHex";
 
@@ -58,5 +60,8 @@ public class Preference
         return true;
     }
 
+    public static int getFontSize() {
+    	return pref.getInt(Preference.fontSize, 12);
+    }
     // TODO: Also move all configuration stuff into this file.
 }

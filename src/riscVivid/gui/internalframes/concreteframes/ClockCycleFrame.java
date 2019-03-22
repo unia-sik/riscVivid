@@ -22,6 +22,7 @@ package riscVivid.gui.internalframes.concreteframes;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
@@ -39,9 +40,11 @@ import riscVivid.datatypes.uint32;
 import riscVivid.exception.MemoryException;
 import riscVivid.gui.GUI_CONST;
 import riscVivid.gui.MainFrame;
+import riscVivid.gui.Preference;
 import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
 import riscVivid.gui.internalframes.renderer.ClockCycleFrameTableCellRenderer;
 import riscVivid.gui.internalframes.util.NotSelectableTableModel;
+import riscVivid.gui.util.MWheelFontSizeChanger;
 import riscVivid.util.ClockCycleLog;
 
 @SuppressWarnings("serial")
@@ -55,6 +58,9 @@ public final class ClockCycleFrame extends OpenDLXSimInternalFrame implements GU
     //default size values
     private final int instructionNameMaxColWidth = 150;
     private int block = 80;
+    private int tableColumnWidth = 30;
+    private int codeTableColumnWidth = 150;
+    private int addrTableColumnWidth = 100;
     //tables, scrollpane and table models
     private JTable table, codeTable, addrTable;
     private NotSelectableTableModel model, codeModel, addrModel;
@@ -94,6 +100,8 @@ public final class ClockCycleFrame extends OpenDLXSimInternalFrame implements GU
         codeScrollPane = new JScrollPane(codeTable);
         codeScrollPane.setPreferredSize(new Dimension(tcm.getColumn(0).getMaxWidth(),
                 codeScrollPane.getPreferredSize().height));
+        codeScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        codeScrollPane.getHorizontalScrollBar().setEnabled(false);
         codeScrollBar = codeScrollPane.getVerticalScrollBar();
         codeScrollBar.addAdjustmentListener(new AdjustmentListener()
         {
@@ -120,6 +128,8 @@ public final class ClockCycleFrame extends OpenDLXSimInternalFrame implements GU
         addrScrollPane = new JScrollPane(addrTable);
         addrScrollPane.setPreferredSize(new Dimension(tcm2.getColumn(0).getMaxWidth(),
                 addrScrollPane.getPreferredSize().height));
+        addrScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        addrScrollPane.getHorizontalScrollBar().setEnabled(false);
         addrScrollBar = addrScrollPane.getVerticalScrollBar();
         addrScrollBar.addAdjustmentListener(new AdjustmentListener()
         {
@@ -134,6 +144,11 @@ public final class ClockCycleFrame extends OpenDLXSimInternalFrame implements GU
 
         //scroll pane and frame
         clockCycleScrollPane = makeTableScrollPane();
+
+        for (JScrollPane s : new JScrollPane[] {clockCycleScrollPane,
+                addrScrollPane, codeScrollPane})
+            MWheelFontSizeChanger.getInstance().add(s);
+        setFont(addrTable.getFont().deriveFont((float)Preference.getFontSize()));
         add(addrScrollPane, BorderLayout.EAST);
         add(codeScrollPane, BorderLayout.WEST);
         add(clockCycleScrollPane, BorderLayout.CENTER);
@@ -230,7 +245,7 @@ public final class ClockCycleFrame extends OpenDLXSimInternalFrame implements GU
         for (int j = 0; j < table.getColumnModel().getColumnCount(); ++j)
         {
             TableColumn column = table.getColumnModel().getColumn(j);
-            column.setMaxWidth(30);
+            column.setMaxWidth(tableColumnWidth);
             column.setResizable(false);
         }
 
@@ -248,5 +263,63 @@ public final class ClockCycleFrame extends OpenDLXSimInternalFrame implements GU
         dispose();
     }
 
+    @Override
+    public void setFont(Font f) {
+    	super.setFont(f);
+    	
+    	// if size becomes smaller, first set the min width, then the max width
+    	boolean minFirst = false;
+    	if (f.getSize() < table.getFont().getSize())
+    		minFirst = true;
+    	
+    	for (JTable t : new JTable[] {table, codeTable, addrTable}) {
+    		t.setFont(f);
+    		t.getTableHeader().setFont(f);
+    		t.setRowHeight(f.getSize() + 4);
+    	}
+    	
+    	// adjust width of the columns of the tables
+    	this.tableColumnWidth = table.getFontMetrics(f).stringWidth("MEM_");
+        for (int j = 0; j < table.getColumnModel().getColumnCount(); ++j)
+        {
+            TableColumn column = table.getColumnModel().getColumn(j);
+            if (minFirst) {
+                column.setMinWidth(tableColumnWidth);
+                column.setMaxWidth(tableColumnWidth);
+            } else {
+                column.setMaxWidth(tableColumnWidth);
+                column.setMinWidth(tableColumnWidth);
+            }
+        }
+        this.codeTableColumnWidth = codeTable.getFontMetrics(f).stringWidth("bge a0, zero, pc0x00000000");
+        this.addrTableColumnWidth = addrTable.getFontMetrics(f).stringWidth("0x00000000___");
+        if (minFirst) {
+        	codeTable.getColumnModel().getColumn(0).setMinWidth(codeTableColumnWidth);
+        	codeTable.getColumnModel().getColumn(0).setMaxWidth(codeTableColumnWidth);
+            addrTable.getColumnModel().getColumn(0).setMinWidth(addrTableColumnWidth);
+            addrTable.getColumnModel().getColumn(0).setMaxWidth(addrTableColumnWidth);
+        } else {
+        	codeTable.getColumnModel().getColumn(0).setMaxWidth(codeTableColumnWidth);
+        	codeTable.getColumnModel().getColumn(0).setMinWidth(codeTableColumnWidth);
+            addrTable.getColumnModel().getColumn(0).setMaxWidth(addrTableColumnWidth);
+            addrTable.getColumnModel().getColumn(0).setMinWidth(addrTableColumnWidth);
+        }
+        
+        // adjust width of the scrollpanes
+        codeScrollPane.setPreferredSize(new Dimension(
+        		codeTableColumnWidth + codeScrollPane.getVerticalScrollBar().getWidth() + 3,
+        		codeScrollPane.getPreferredSize().height));
+        addrScrollPane.setPreferredSize(new Dimension(
+        		addrTableColumnWidth + addrScrollPane.getVerticalScrollBar().getWidth() + 3,
+                addrScrollPane.getPreferredSize().height));
+        
+        //scroll to the bottom; 
+        if (minFirst) {
+        	clockCycleScrollPane.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
+        	clockCycleScrollPane.getHorizontalScrollBar().setValue(Integer.MAX_VALUE);
+        } else {
+        	table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1, table.getColumnCount() - 1, true));
+        }
+    }
 
 }

@@ -41,7 +41,7 @@ public class FrameConfiguration
 
     public void saveFrameConfiguration()
     {
-        String frameTitle = jif.getTitle();
+    	String frameTitle = jif.getClass().getSimpleName();
         pref.putInt(frameTitle + posXPreferenceKey, jif.getX());
         pref.putInt(frameTitle + posYPreferenceKey, jif.getY());
         pref.putInt(frameTitle + sizeXPreferenceKey, jif.getSize().width);
@@ -51,10 +51,11 @@ public class FrameConfiguration
 
     public void loadFrameConfiguration()
     {
-        jif.setBounds(pref.getInt(jif.getTitle() + posXPreferenceKey, jif.getX()),
-                pref.getInt(jif.getTitle() + posYPreferenceKey, jif.getY()),
-                pref.getInt(jif.getTitle() + sizeXPreferenceKey, jif.getWidth()),
-                pref.getInt(jif.getTitle() + sizeYPreferenceKey, jif.getHeight()));
+    	String frameTitle = jif.getClass().getSimpleName();
+        jif.setBounds(pref.getInt(frameTitle + posXPreferenceKey, jif.getX()),
+                pref.getInt(frameTitle + posYPreferenceKey, jif.getY()),
+                pref.getInt(frameTitle + sizeXPreferenceKey, jif.getWidth()),
+                pref.getInt(frameTitle + sizeYPreferenceKey, jif.getHeight()));
 
         try
         {

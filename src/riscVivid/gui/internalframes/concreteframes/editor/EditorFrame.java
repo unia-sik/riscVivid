@@ -22,7 +22,9 @@ package riscVivid.gui.internalframes.concreteframes.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -43,8 +45,10 @@ import javax.swing.text.Highlighter;
 import javax.swing.undo.*;
 
 import riscVivid.gui.MainFrame;
+import riscVivid.gui.Preference;
 import riscVivid.gui.GUI_CONST.OpenDLXSimState;
 import riscVivid.gui.command.EventCommandLookUp;
+import riscVivid.gui.command.userLevel.CommandChangeFontSize;
 import riscVivid.gui.command.userLevel.CommandLoadAndRunFile;
 import riscVivid.gui.command.userLevel.CommandLoadFile;
 import riscVivid.gui.command.userLevel.CommandLoadFileBelow;
@@ -56,6 +60,7 @@ import riscVivid.gui.command.userLevel.CommandSave;
 import riscVivid.gui.internalframes.FrameConfiguration;
 import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
 import riscVivid.gui.internalframes.factories.InternalFrameFactory;
+import riscVivid.gui.util.MWheelFontSizeChanger;
 
 @SuppressWarnings("serial")
 public final class EditorFrame extends OpenDLXSimInternalFrame implements ActionListener, KeyListener, UndoableEditListener
@@ -85,8 +90,13 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
     private JButton undo;
     private JButton redo;
     
+    private JButton enlarge;
+    private JButton reduce;
+
     private static EditorFrame instance = null;
     private JTextArea jta;
+    private JScrollPane scrollPane;
+    private TextNumberingPanel tln;
 
     private UndoManager undoMgr;
     
@@ -179,13 +189,16 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
 
         jta = new JTextArea();
         setSavedState();
-        JScrollPane scrollPane = new JScrollPane(jta);
-        TextNumberingPanel tln = new TextNumberingPanel(jta);
+        scrollPane = new JScrollPane(jta);
+        tln = new TextNumberingPanel(jta);
         jta.addKeyListener(this);
         jta.getDocument().addUndoableEditListener(this);
         
+        MWheelFontSizeChanger.getInstance().add(jta, scrollPane);
+
         scrollPane.setRowHeaderView(tln);
         add(scrollPane, BorderLayout.CENTER);
+
         clear = createButton("New", "Clear All [ALT+C]", KeyEvent.VK_C, "/img/icons/tango/clear.png");
         load = createButton("Open...", "Open Program [CTRL+O]", KeyEvent.VK_O, "/img/icons/tango/load.png");
         addcode = createButton("Add Code...", "Add Code to Programms... [CTRL+I]", KeyEvent.VK_I, "/img/icons/tango/addcode.png");
@@ -194,6 +207,8 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
         loadandassem = createButton("Open & Assemble...", "Open Program and Assemble [CTRL+R]", KeyEvent.VK_O, "/img/icons/tango/loadandrun.png");
         undo = createButton("Undo", "Undo [CTRL+Z]", KeyEvent.VK_U, "/img/icons/tango/undo.png");
         redo = createButton("Redo", "Redo [CTRL+SHIFT+Z]", KeyEvent.VK_R, "/img/icons/tango/redo.png"); 
+        reduce = createButton("Reduce", "Reduce [CTRL+DOWN]", KeyEvent.VK_DOWN, "/img/icons/tango/reduce.png");
+        enlarge = createButton("Enlarge", "Enlarge [CTRL+UP]", KeyEvent.VK_UP, "/img/icons/tango/enlarge.png");
         
         // if  parameter command = null, command is not yet implemented and should be implemented soon   
 
@@ -205,6 +220,8 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
         EventCommandLookUp.put(clear, new CommandNewFile(mf));
 //        EventCommandLookUp.put(undo, undoCommand); 
 //        EventCommandLookUp.put(redo, redoCommand);
+        EventCommandLookUp.put(enlarge,  new CommandChangeFontSize(+1));
+        EventCommandLookUp.put(reduce,  new CommandChangeFontSize(-1));
 
         
         assem.addActionListener(this);
@@ -215,8 +232,9 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
         clear.addActionListener(this);
         undo.addActionListener(this);
         redo.addActionListener(this);
+        enlarge.addActionListener(this);
+        reduce.addActionListener(this);
 
-        
         // TODO deactivate toolbar when simulator is in run mode
         JToolBar toolBar = new JToolBar("Editor toolbar");
         toolBar.add(clear);
@@ -227,6 +245,8 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
         toolBar.add(loadandassem);
         toolBar.add(undo);
         toolBar.add(redo);
+        toolBar.add(reduce);
+        toolBar.add(enlarge);
         toolBar.setFloatable(false);
         toolBar.setRollover(false);
         toolBar.setFocusable(false);
@@ -234,10 +254,26 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
         
         
         setPreferredSize(new Dimension(size_x, size_y));
+        setFont(jta.getFont().deriveFont((float)Preference.getFontSize()));
+
         pack();
         setVisible(true);
     }
 
+    @Override
+    public void setFont(Font f) {
+    	super.setFont(f);
+    	for (Component c : new Component[] {jta, tln}) {
+        	c.setFont(f);
+    	}
+    	/* Don't change button size as it can yield weird looking results
+    	Font buttonFont = f.deriveFont((float)f.getSize());
+    	for (Component c : new Component[] {assem, load, loadandassem, addcode, 
+    			save, clear, undo, redo, enlarge, reduce}) {
+        	c.setFont(buttonFont);
+    	}
+    	*/
+    }
 
     @Override
     public void actionPerformed(ActionEvent e)

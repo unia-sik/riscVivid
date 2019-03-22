@@ -21,6 +21,7 @@
 package riscVivid.gui.internalframes.concreteframes;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -29,9 +30,11 @@ import javax.swing.table.TableModel;
 import riscVivid.RiscVividSimulator;
 import riscVivid.PipelineContainer;
 import riscVivid.gui.MainFrame;
+import riscVivid.gui.Preference;
 import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
 import riscVivid.gui.internalframes.factories.tableFactories.CodeTableFactory;
 import riscVivid.gui.internalframes.util.TableSizeCalculator;
+import riscVivid.gui.util.MWheelFontSizeChanger;
 
 @SuppressWarnings("serial")
 public final class CodeFrame extends OpenDLXSimInternalFrame
@@ -96,12 +99,16 @@ public final class CodeFrame extends OpenDLXSimInternalFrame
         codeTable = new CodeTableFactory(openDLXSim).createTable();
         JScrollPane scrollpane = new JScrollPane(codeTable);
         scrollpane.setFocusable(false);
+        MWheelFontSizeChanger.getInstance().add(scrollpane);
+
         codeTable.setFillsViewportHeight(true);
         TableSizeCalculator.setDefaultMaxTableSize(scrollpane, codeTable,
                 TableSizeCalculator.SET_SIZE_WIDTH);
         //config internal frame
         setLayout(new BorderLayout());
         add(scrollpane, BorderLayout.CENTER);
+        setFont(codeTable.getFont().deriveFont((float)Preference.getFontSize()));
+
         pack();
         setVisible(true);
     }
@@ -111,6 +118,32 @@ public final class CodeFrame extends OpenDLXSimInternalFrame
     {
         setVisible(false);
         dispose();
+    }
+
+    @Override
+    public void setFont(Font f) {
+    	super.setFont(f);
+    	codeTable.setFont(f);
+    	codeTable.getTableHeader().setFont(f);
+    	codeTable.setRowHeight(f.getSize() + 4);
+    	int addressWidth = codeTable.getFontMetrics(f).stringWidth("0x00000000_MEM____");
+    	int hexWidth = codeTable.getFontMetrics(f).stringWidth("0x00000000___");
+    	// if width is shortened, first set min width, then max width
+    	if (addressWidth < codeTable.getColumn("address").getMaxWidth()) {
+        	codeTable.getColumn("address").setMinWidth(addressWidth);
+        	codeTable.getColumn("address").setMaxWidth(addressWidth);
+        	codeTable.getColumn("code hex").setMinWidth(hexWidth);
+        	codeTable.getColumn("code hex").setMaxWidth(hexWidth);
+    	} else {
+        	codeTable.getColumn("address").setMaxWidth(addressWidth);
+        	codeTable.getColumn("address").setMinWidth(addressWidth);
+        	codeTable.getColumn("code hex").setMaxWidth(hexWidth);
+        	codeTable.getColumn("code hex").setMinWidth(hexWidth);
+    	}
+    	// the last column may expand indefinitely
+    	int codeWidth = codeTable.getFontMetrics(f).stringWidth("add zero, zero, zero_");
+    	codeTable.getColumn("code RISCV").setMaxWidth(Integer.MAX_VALUE);
+    	codeTable.getColumn("code RISCV").setMinWidth(codeWidth);
     }
 
 }

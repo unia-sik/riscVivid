@@ -20,11 +20,13 @@
  ******************************************************************************/
 package riscVivid.gui.internalframes.concreteframes;
 
+import java.awt.Font;
 import java.awt.BorderLayout;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import javax.swing.table.TableColumn;
 import riscVivid.RegisterSet;
 import riscVivid.datatypes.ArchCfg;
 import riscVivid.datatypes.uint32;
@@ -34,6 +36,7 @@ import riscVivid.gui.Preference;
 import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
 import riscVivid.gui.internalframes.factories.tableFactories.RegisterTableFactory;
 import riscVivid.gui.internalframes.util.TableSizeCalculator;
+import riscVivid.gui.util.MWheelFontSizeChanger;
 
 @SuppressWarnings("serial")
 public final class RegisterFrame extends OpenDLXSimInternalFrame
@@ -75,12 +78,39 @@ public final class RegisterFrame extends OpenDLXSimInternalFrame
         scrollpane.setFocusable(false);
         registerTable.setFillsViewportHeight(true);
         TableSizeCalculator.setDefaultMaxTableSize(scrollpane, registerTable,
-                TableSizeCalculator.SET_SIZE_BOTH);
+                TableSizeCalculator.SET_SIZE_WIDTH);
+
+        MWheelFontSizeChanger.getInstance().add(scrollpane);
+
         //config internal frame
         setLayout(new BorderLayout());
+        setFont(registerTable.getFont().deriveFont((float)Preference.getFontSize()));
         add(scrollpane, BorderLayout.CENTER);
         pack();
         setVisible(true);
+    }
+
+    @Override
+    public void setFont(Font f) {
+    	super.setFont(f);
+    	registerTable.setFont(f);
+    	registerTable.getTableHeader().setFont(f);
+    	registerTable.setRowHeight(f.getSize() + 4);
+    	TableColumn registerColumn = registerTable.getColumn("Register");
+    	int registerColWidth = registerTable.getFontMetrics(f).stringWidth("00: zero__");
+    	// if width is shortened, first set min width, then max width
+    	if (registerColWidth < registerColumn.getMaxWidth()) {
+    		registerColumn.setMinWidth(registerColWidth);
+        	registerColumn.setMaxWidth(registerColWidth);
+    	} else {
+        	registerColumn.setMaxWidth(registerColWidth);
+    		registerColumn.setMinWidth(registerColWidth);
+    	}
+    	TableColumn valuesColumn = registerTable.getColumn("Values");
+    	int valuesColWidth = registerTable.getFontMetrics(f).stringWidth("0x00000000_");
+    	// the last column may expand indefinitely
+    	valuesColumn.setMaxWidth(Integer.MAX_VALUE);
+    	valuesColumn.setMinWidth(valuesColWidth);
     }
 
     @Override

@@ -37,6 +37,7 @@ import riscVivid.gui.Preference;
 import riscVivid.gui.GUI_CONST.OpenDLXSimState;
 import riscVivid.gui.command.Command;
 import riscVivid.gui.command.EventCommandLookUp;
+import riscVivid.gui.command.userLevel.CommandChangeFontSize;
 import riscVivid.gui.command.userLevel.CommandChangeWindowVisibility;
 import riscVivid.gui.command.userLevel.CommandClearAllPreferences;
 import riscVivid.gui.command.userLevel.CommandDisplayTooltips;
@@ -121,9 +122,13 @@ public class MainFrameMenuBarFactory
     
     private static final String STRING_MENU_EDIT_UNDO = "Undo";
     private static final String STRING_MENU_EDIT_REDO = "Redo";
+    private static final String STRING_MENU_EDIT_ENLARGE = "Enlarge font size";
+    private static final String STRING_MENU_EDIT_REDUCE = "Reduce font size";
     
     private static final KeyStroke KEY_MENU_EDIT_UNDO = KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.Event.CTRL_MASK);
     private static final KeyStroke KEY_MENU_EDIT_REDO = KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.Event.CTRL_MASK | java.awt.Event.SHIFT_MASK);
+    private static final KeyStroke KEY_MENU_EDIT_ENLARGE = KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, java.awt.Event.CTRL_MASK);
+    private static final KeyStroke KEY_MENU_EDIT_REDUCE = KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, java.awt.Event.CTRL_MASK);
 
     private static final String STRING_MENU_WINDOW_SAVE = "Save Current Window Configuration";
     private static final String STRING_MENU_WINDOW_LOAD = "Load Saved Window Configuration";
@@ -221,6 +226,8 @@ public class MainFrameMenuBarFactory
         
         addMenuItem(editMenu, STRING_MENU_EDIT_UNDO, KEY_MENU_EDIT_UNDO, StateValidator.executingOrLazyStates, new CommandPerformEditorUndo(mf.getEditorUndoManager()));
         addMenuItem(editMenu, STRING_MENU_EDIT_REDO, KEY_MENU_EDIT_REDO, StateValidator.executingOrLazyStates, new CommandPerformEditorRedo(mf.getEditorUndoManager()));
+        addMenuItem(editMenu, STRING_MENU_EDIT_ENLARGE, KEY_MENU_EDIT_ENLARGE, StateValidator.executingOrLazyStates, new CommandChangeFontSize(+1));
+        addMenuItem(editMenu, STRING_MENU_EDIT_REDUCE, KEY_MENU_EDIT_REDUCE, StateValidator.executingOrLazyStates, new CommandChangeFontSize(-1));
 
         addMenuItem(windowMenu, STRING_MENU_WINDOW_SAVE, KEY_MENU_WINDOW_SAVE, StateValidator.executingOrLazyStates, new CommandSaveFrameConfigurationUsrLevel(mf));
         addMenuItem(windowMenu, STRING_MENU_WINDOW_LOAD, KEY_MENU_WINDOW_LOAD, StateValidator.executingOrLazyStates, new CommandLoadFrameConfigurationUsrLevel(mf));

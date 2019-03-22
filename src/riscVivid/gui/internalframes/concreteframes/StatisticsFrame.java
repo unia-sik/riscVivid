@@ -21,9 +21,14 @@
 package riscVivid.gui.internalframes.concreteframes;
 
 import java.awt.Dimension;
-import javax.swing.JTextArea;
+import java.awt.Font;
 
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+
+import riscVivid.gui.Preference;
 import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
+import riscVivid.gui.util.MWheelFontSizeChanger;
 import riscVivid.util.Statistics;
 
 @SuppressWarnings("serial")
@@ -38,9 +43,13 @@ public final class StatisticsFrame extends OpenDLXSimInternalFrame
         super.initialize();
         statArea = new JTextArea();
         statArea.setEditable(false);
-        statArea.setPreferredSize(new Dimension(200, 200));
-        add(statArea);
-        pack();
+        JScrollPane scrollpane = new JScrollPane(statArea);
+        add(scrollpane);
+
+        setFont(statArea.getFont().deriveFont((float)Preference.getFontSize()));
+        MWheelFontSizeChanger.getInstance().add(statArea, scrollpane);
+
+        setSize(new Dimension(200, 200));
         setVisible(true);
 
     }
@@ -56,6 +65,12 @@ public final class StatisticsFrame extends OpenDLXSimInternalFrame
     {
         setVisible(false);
         dispose();
+    }
+
+    @Override
+    public void setFont(Font f) {
+    	super.setFont(f);
+    	statArea.setFont(f);
     }
 
 }

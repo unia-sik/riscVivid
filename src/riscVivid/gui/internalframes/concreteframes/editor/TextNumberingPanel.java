@@ -47,6 +47,7 @@ public class TextNumberingPanel extends JPanel
     private int lastDigits;
     private int lastHeight;
     private int lastLine;
+    private Font lastFont;
     private HashMap<String, FontMetrics> fonts;
 
     public TextNumberingPanel(JTextComponent component)
@@ -133,9 +134,10 @@ public class TextNumberingPanel extends JPanel
         int digits = Math.max(String.valueOf(lines).length(), minimumDisplayDigits);
 
 
-        if (lastDigits != digits)
+        if (lastDigits != digits || getFont() != lastFont)
         {
             lastDigits = digits;
+            lastFont = getFont();
             FontMetrics fontMetrics = getFontMetrics(getFont());
             int width = fontMetrics.charWidth('0') * digits;
             Insets insets = getInsets();
@@ -194,7 +196,6 @@ public class TextNumberingPanel extends JPanel
     {
         int caretPosition = component.getCaretPosition();
         Element root = component.getDocument().getDefaultRootElement();
-
         if (root.getElementIndex(rowStartOffset) == root.getElementIndex(caretPosition))
         {
             return true;
@@ -349,6 +350,13 @@ public class TextNumberingPanel extends JPanel
                 repaint();
             }
         }
+    }
+
+    @Override
+    public void setFont(Font f) {
+    	super.setFont(f);
+    	if (this.component != null) //otherwise throws exception while initializing
+    		setPreferredWidth();
     }
 
 }
