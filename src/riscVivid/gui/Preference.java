@@ -52,9 +52,8 @@ public class Preference
 
     public static boolean displayRegistersAsHex()
     {
-        // TODO: Add GUI switch
-        // boolean isHex = pref.getBoolean(displayRegistersAsHex, true);
-        return true;
+        boolean isHex = pref.getBoolean(displayRegistersAsHex, true);
+        return isHex;
     }
 
     // TODO: Also move all configuration stuff into this file.
