@@ -20,9 +20,13 @@
  ******************************************************************************/
 package riscVivid;
 
+import java.util.Random;
+
 import org.apache.log4j.Logger;
 
+import riscVivid.asm.instruction.Registers;
 import riscVivid.datatypes.*;
+import riscVivid.gui.Preference;
 
 public class RegisterSet
 {
@@ -37,7 +41,7 @@ public class RegisterSet
 		gp_registers = new uint32[register_count];
 		HI = new uint32();
 		LO = new uint32();
-		clearRegisters();
+		initRegisters();
 	}
 	
 	public uint32 read(uint8 reg)
@@ -85,15 +89,25 @@ public class RegisterSet
 		}
 	}
 	
-	private void clearRegisters()
+	private void initRegisters()
 	{
+	    	int init = Preference.pref.getInt(Preference.initializeOptionPreferenceKey, 0);
+	    	boolean random = init > 0xff || init < 0;
+
+	    	Random rand = new Random();
+	    	if (!random) { // 0 <= init <= 0xff
+		    // Set all bytes of init to (byte)init (conversion not needed, as init <= 0xff)
+	    	    init = init << 24 | init << 16 | init << 8 | init;
+	    	}
 		for(byte i = 0; i < register_count; i++)
 		{
-			uint32 val = new uint32(0);
+			uint32 val = new uint32(random ? rand.nextInt() : init);
 			gp_registers[i] = val;
 		}
-		HI = new uint32(0);
-		LO = new uint32(0);
+		HI = new uint32(random ? rand.nextInt() : init);
+		LO = new uint32(random ? rand.nextInt() : init);
+		
+		gp_registers[Registers.instance().getInteger("zero")] = new uint32(0);
 	}
 
 	public void printContent()

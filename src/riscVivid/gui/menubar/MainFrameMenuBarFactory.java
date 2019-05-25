@@ -58,9 +58,10 @@ import riscVivid.gui.command.userLevel.CommandRunFromConfigurationFile;
 import riscVivid.gui.command.userLevel.CommandRunFromEditor;
 import riscVivid.gui.command.userLevel.CommandRunSlowly;
 import riscVivid.gui.command.userLevel.CommandRunToAddressX;
+import riscVivid.gui.command.userLevel.CommandSave;
 import riscVivid.gui.command.userLevel.CommandSaveAs;
 import riscVivid.gui.command.userLevel.CommandSaveFrameConfigurationUsrLevel;
-import riscVivid.gui.command.userLevel.CommandSave;
+import riscVivid.gui.command.userLevel.CommandSetInitialize;
 import riscVivid.gui.command.userLevel.CommandSetLaF;
 import riscVivid.gui.command.userLevel.CommandShowAbout;
 import riscVivid.gui.command.userLevel.CommandShowOptionDialog;
@@ -82,6 +83,7 @@ public class MainFrameMenuBarFactory
     private static final String STRING_MENU_WINDOW = "Window";
     private static final String STRING_MENU_LAF = "Look & Feels";
     private static final String STRING_MENU_HELP = "Help";
+    private static final String STRING_MENU_INITIALIZE = "Init Registers and Memory with";
 
     private static final String STRING_MENU_FILE_NEW = "New";
     private static final String STRING_MENU_FILE_OPEN = "Open...";
@@ -188,6 +190,7 @@ public class MainFrameMenuBarFactory
         JMenu windowMenu = new JMenu(STRING_MENU_WINDOW);
         JMenu lookAndFeelMenu = new JMenu(STRING_MENU_LAF);
         JMenu helpMenu = new JMenu(STRING_MENU_HELP);
+        JMenu initializeMenu = new JMenu(STRING_MENU_INITIALIZE);
 
         jmb.add(fileMenu);
         jmb.add(simulatorMenu);
@@ -216,6 +219,22 @@ public class MainFrameMenuBarFactory
         addMenuItem(simulatorMenu, STRING_MENU_SIMULATOR_RUN_TO, KEY_MENU_SIMULATOR_RUN_TO, StateValidator.executingStates, new CommandRunToAddressX(mf));
         addMenuItem(simulatorMenu, STRING_MENU_SIMULATOR_RESTART, KEY_MENU_SIMULATOR_RESTART, StateValidator.executingStates, new CommandResetCurrentProgram(mf));
 
+        simulatorMenu.add(initializeMenu);
+        ButtonGroup initializeOptionsGroup = new ButtonGroup();
+
+        for (CommandSetInitialize.Choice c : CommandSetInitialize.Choice.values())
+        {
+            OpenDLXSimRadioButtonMenuItem item = addRadioButtonMenuItem(initializeMenu, CommandSetInitialize.getChoiceString(c), 
+            		null, initializeOptionsGroup, StateValidator.allStates);
+            // Test if current Choice is in Preference (default: ZERO)
+            if (CommandSetInitialize.getChoiceInt(c) == Preference.pref.getInt(Preference.initializeOptionPreferenceKey,
+        	    CommandSetInitialize.getChoiceInt(CommandSetInitialize.Choice.ZERO)))
+            	item.setSelected(true);
+            
+            EventCommandLookUp.put(item, new CommandSetInitialize(c));
+            
+        }
+        
 /* Disable Options and Forwarding, as it is not working with the RISC_V ISA
         simulatorMenu.addSeparator();
 

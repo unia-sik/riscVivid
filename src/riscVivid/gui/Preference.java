@@ -30,7 +30,7 @@ public class Preference
             GlobalConfig.PREFERENCES_DIR);
 
     // global definitions of the different preference keys
-    public static final String forwardingPreferenceKey = "forwadingenabled";
+    public static final String forwardingPreferenceKey = "forwardingenabled";
     public static final String mipsCompatibilityPreferenceKey = "mipscompatibilityenabled";
     public static final String noBranchDelaySlotPreferenceKey = "nobranchdelayslot";
     public static final String isaTypePreferenceKey = "isatype";
@@ -42,10 +42,16 @@ public class Preference
     public static final String showExitMessage = "showexitmessage";
     public static final String lookAndFeel = "lookandfeel";
     public static final String fontSize = "fontsize";
-
-    // TODO implement option
+    public static final String saveChooserPathPreferenceKey = "savefilechooserpath";
+    public static final String initializeOptionPreferenceKey = "initializeoption";
+    public static final String showInitializeOptionMessage = "showinitoptionmessage";
     public static final String displayRegistersAsHex = "displayRegistersAsHex";
 
+
+    public static String getSaveFileChooserPath() {
+        return Preference.pref.get(saveChooserPathPreferenceKey, "/home");
+    }
+    
     public static boolean displayMemoryAsHex()
     {
         return pref.getBoolean(displayMemoryAsHex, true);

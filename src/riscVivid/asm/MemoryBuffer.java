@@ -20,6 +20,11 @@
  ******************************************************************************/
 package riscVivid.asm;
 
+import java.util.Arrays;
+import java.util.Random;
+
+import riscVivid.gui.Preference;
+
 /**
  * This class manages a resizable byteArray and supports methods for writing and
  * reading bytes(8bit),half words(16bit) and words(32bit). There is support for
@@ -43,11 +48,7 @@ public class MemoryBuffer {
 	 * create new MemoryBuffer with INITIAL_SIZE size and little endian mode
 	 */
 	public MemoryBuffer() {
-		byteArray = new byte[INITIAL_SIZE];
-		littleEndian = true;
-		entryPoint = 0;
-		textEnd = 0;
-		dataEnd = 0;
+		this(INITIAL_SIZE);
 	}
 
 	/**
@@ -64,6 +65,15 @@ public class MemoryBuffer {
 		entryPoint = 0;
 		textEnd = 0;
 		dataEnd = 0;
+		
+		// initialize memory
+		int init = Preference.pref.getInt(Preference.initializeOptionPreferenceKey, 0);
+		boolean random = init > 0xff || init < 0;
+
+		Random rand = new Random();
+		for (int i = 0; i < initSize; ++i) {
+		    byteArray[i] = random ? (byte)rand.nextInt(256) : (byte)init;
+		}
 	}
 
 	/*
@@ -141,6 +151,8 @@ public class MemoryBuffer {
 		if (textBegin < 0)
 			textBegin = 0;
 		this.textBegin = textBegin;
+		// fill text segment with bubbles: everything after textBegin should be zero
+		Arrays.fill(byteArray, textBegin, byteArray.length, (byte)0);
 	}
 
 	/**
