@@ -78,6 +78,12 @@ public final class MemoryFrame extends OpenDLXSimInternalFrame implements Action
     {
         super(name, false);
         this.mf = mf;
+	// find start address of first data segment in config
+	if (mf.getOpenDLXSim().getConfig().contains("data_begin_0")) 
+		startAddr = ValueInput.getValueSilent(mf.getOpenDLXSim().getConfig().getProperty("data_begin_0"));
+	else if (mf.getOpenDLXSim().getConfig().contains("data_begin")) 
+		startAddr = ValueInput.getValueSilent(mf.getOpenDLXSim().getConfig().getProperty("data_begin")); 
+
         initialize();
     }
 

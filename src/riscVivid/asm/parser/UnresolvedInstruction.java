@@ -25,12 +25,12 @@ import riscVivid.asm.tokenizer.Token;
 public class UnresolvedInstruction {
 	public Token[] tokens;
 	public int position;
-	public boolean inTextSegement;
+	public boolean inTextSegment;
 
 	public UnresolvedInstruction(Token[] tokens, int position,
-			boolean inTextSegement) {
+			boolean inTextSegment) {
 		this.tokens = tokens;
 		this.position = position;
-		this.inTextSegement = inTextSegement;
+		this.inTextSegment = inTextSegment;
 	}
 }

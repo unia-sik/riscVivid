@@ -61,7 +61,6 @@ import riscVivid.gui.command.userLevel.CommandRunToAddressX;
 import riscVivid.gui.command.userLevel.CommandSave;
 import riscVivid.gui.command.userLevel.CommandSaveAs;
 import riscVivid.gui.command.userLevel.CommandSaveFrameConfigurationUsrLevel;
-import riscVivid.gui.command.userLevel.CommandSetInitialize;
 import riscVivid.gui.command.userLevel.CommandSetLaF;
 import riscVivid.gui.command.userLevel.CommandShowAbout;
 import riscVivid.gui.command.userLevel.CommandShowOptionDialog;
@@ -74,6 +73,8 @@ import riscVivid.gui.internalframes.concreteframes.RegisterFrame;
 import riscVivid.gui.internalframes.concreteframes.StatisticsFrame;
 import riscVivid.gui.internalframes.concreteframes.editor.EditorFrame;
 import riscVivid.gui.internalframes.factories.InternalFrameFactory;
+import riscVivid.gui.command.userLevel.CommandSetInitialize;
+import riscVivid.gui.command.userLevel.CommandSetStopOnMemoryWarning;
 
 public class MainFrameMenuBarFactory
 {
@@ -114,6 +115,7 @@ public class MainFrameMenuBarFactory
     private static final String STRING_MENU_SIMULATOR_RESTART = "Restart Program";
     private static final String STRING_MENU_SIMULATOR_OPTIONS = "Options";
     public static final String STRING_MENU_SIMULATOR_FORWARDING = "Forwarding";
+    private static final String STRING_MENU_SIMULATOR_STOP_ON__MEM_WARNING = "Stop on memory warning";
 
     private static final KeyStroke KEY_MENU_SIMULATOR_RUN_PROGRAM = KeyStroke.getKeyStroke("F5");
     private static final KeyStroke KEY_MENU_SIMULATOR_RUN_PROGRAM_SLOWLY = KeyStroke.getKeyStroke("F6");
@@ -124,6 +126,7 @@ public class MainFrameMenuBarFactory
     private static final KeyStroke KEY_MENU_SIMULATOR_RESTART = KeyStroke.getKeyStroke("F4");
     private static final KeyStroke KEY_MENU_SIMULATOR_OPTIONS = null;
     private static final KeyStroke KEY_MENU_SIMULATOR_FORWARDING = null;
+    private static final KeyStroke KEY_MENU_SIMULATOR_STOP_ON_MEM_WARNING = null;
     
     private static final String STRING_MENU_EDIT_UNDO = "Undo";
     private static final String STRING_MENU_EDIT_REDO = "Redo";
@@ -219,6 +222,7 @@ public class MainFrameMenuBarFactory
         addMenuItem(simulatorMenu, STRING_MENU_SIMULATOR_RUN_TO, KEY_MENU_SIMULATOR_RUN_TO, StateValidator.executingStates, new CommandRunToAddressX(mf));
         addMenuItem(simulatorMenu, STRING_MENU_SIMULATOR_RESTART, KEY_MENU_SIMULATOR_RESTART, StateValidator.executingStates, new CommandResetCurrentProgram(mf));
 
+	// initialization of memory and registers
         simulatorMenu.add(initializeMenu);
         ButtonGroup initializeOptionsGroup = new ButtonGroup();
 
@@ -232,9 +236,14 @@ public class MainFrameMenuBarFactory
             	item.setSelected(true);
             
             EventCommandLookUp.put(item, new CommandSetInitialize(c));
-            
         }
         
+        // stop on memory warning (e.g. access to unreserved memory)
+        OpenDLXSimCheckBoxMenuItem checkWarnItem = addCheckBoxMenuItem(simulatorMenu, STRING_MENU_SIMULATOR_STOP_ON__MEM_WARNING,
+        		KEY_MENU_SIMULATOR_STOP_ON_MEM_WARNING, StateValidator.executingOrLazyStates);
+        EventCommandLookUp.put(checkWarnItem, new CommandSetStopOnMemoryWarning(checkWarnItem));
+        // get preference and set selected if stop on memory warning is enabled
+        checkWarnItem.setSelected(Preference.isStopOnMemoryWarningEnabled());
 /* Disable Options and Forwarding, as it is not working with the RISC_V ISA
         simulatorMenu.addSeparator();
 

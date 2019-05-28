@@ -30,7 +30,7 @@ import riscVivid.gui.MainFrame;
 import riscVivid.gui.Preference;
 import riscVivid.gui.command.Command;
 import riscVivid.gui.command.systemLevel.CommandSaveFrameConfigurationSysLevel;
-import riscVivid.gui.util.AskForSave;
+import riscVivid.gui.util.DialogWrapper;
 import riscVivid.util.TmpFileCleaner;
 
 public class CommandExitProgram implements Command
@@ -56,7 +56,7 @@ public class CommandExitProgram implements Command
     {
         if (!mf.isEditorTextSaved())
         {
-         	if (!AskForSave.askAndSave(false)) {
+         	if (!DialogWrapper.askForSave(false)) {
          		return false;
          	}
         }

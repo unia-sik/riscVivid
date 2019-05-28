@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 import riscVivid.gui.MainFrame;
 import riscVivid.gui.command.userLevel.CommandSave;
 
-public final class AskForSave {
+public final class DialogWrapper {
 	/**
 	 * Asks user in a dialog if current content should be saved,
 	 * and does so in that case
@@ -18,7 +18,7 @@ public final class AskForSave {
 	 * @param clearEditor:  clear Editor except if user chooses 'Cancel'
 	 *
 	 */
-	public static boolean askAndSave(boolean clearEditor) {
+	public static boolean askForSave(boolean clearEditor) {
 		MainFrame mf = MainFrame.getInstance();
 		File loadedFile = new File(mf.getLoadedCodeFilePath());
 		String dialogText = loadedFile.exists() ?
@@ -39,5 +39,9 @@ public final class AskForSave {
         default:
 			return false;         
          }
+	}
+	
+	public static void showWarning(String title, String content) {
+		JOptionPane.showMessageDialog(MainFrame.getInstance(), content, title, JOptionPane.WARNING_MESSAGE);
 	}
 }

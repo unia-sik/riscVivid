@@ -20,6 +20,7 @@
  ******************************************************************************/
 package riscVivid.asm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -39,10 +40,13 @@ public class MemoryBuffer {
 	private byte[] byteArray;
 	private boolean littleEndian;
 	private int entryPoint;
-	private int dataBegin;
-	private int textBegin;
-	private int dataEnd;
-	private int textEnd;
+	
+	private ArrayList<MemSegment> dataSegments = new ArrayList<MemSegment>();
+	private ArrayList<MemSegment> textSegments = new ArrayList<MemSegment>();
+	// current*Segment contains the index of the segment that was created most recently
+	// by a call of set*Begin()
+	int currentDataSegment = -1;
+	int currentTextSegment = -1;
 
 	/**
 	 * create new MemoryBuffer with INITIAL_SIZE size and little endian mode
@@ -63,8 +67,6 @@ public class MemoryBuffer {
 		byteArray = new byte[initSize];
 		littleEndian = true;
 		entryPoint = 0;
-		textEnd = 0;
-		dataEnd = 0;
 		
 		// initialize memory
 		int init = Preference.pref.getInt(Preference.initializeOptionPreferenceKey, 0);
@@ -114,53 +116,73 @@ public class MemoryBuffer {
 			entryPoint = 0;
 		this.entryPoint = entryPoint;
 	}
-
-	/**
-	 * 
-	 * @return begin of data
-	 */
-	public int getDataBegin() {
-		return dataBegin;
+	
+	public int getTextBegin(int segment) {
+		return textSegments.get(segment).begin;
+	}
+	public int getTextEnd(int segment) {
+		return textSegments.get(segment).end;
+	}
+	public int getDataBegin(int segment) {
+		return dataSegments.get(segment).begin;
+	}
+	public int getDataEnd(int segment) {
+		return dataSegments.get(segment).end;
 	}
 
+	public int getNumTextSegments() {
+		return textSegments.size(); 
+	}
+	public int getNumDataSegments() {
+		return dataSegments.size();
+	}
 	/**
-	 * set begin of data
+	 * set begin of a new data segment
 	 * 
 	 * @param dataBegin
 	 */
 	public void setDataBegin(int dataBegin) {
 		if (dataBegin < 0)
 			dataBegin = 0;
-		this.dataBegin = dataBegin;
+		// remove currentDataSegment if setDataEnd() has never been called
+		if (currentDataSegment >= 0)
+			if (dataSegments.get(currentDataSegment).begin ==
+					dataSegments.get(currentDataSegment).end)
+				dataSegments.remove(currentDataSegment);
+		// find position of the new segment in the list so that the list is sorted by MemSegment.begin
+		int idx;
+		for (idx = 0; idx < dataSegments.size(); ++idx) {
+			if (dataBegin < dataSegments.get(idx).begin)
+				break;
+		}
+		dataSegments.add(idx, new MemSegment(dataBegin, dataBegin));
+		currentDataSegment = idx;
 	}
 
 	/**
-	 * 
-	 * @return begin of text
-	 */
-	public int getTextBegin() {
-		return textBegin;
-	}
-
-	/**
-	 * set begin of text
+	 * set begin of a new text segment
 	 * 
 	 * @param textBegin
 	 */
 	public void setTextBegin(int textBegin) {
 		if (textBegin < 0)
 			textBegin = 0;
-		this.textBegin = textBegin;
+		// remove currentTextSegment if setTextEnd() has never been called
+		if (currentTextSegment >= 0)
+			if (textSegments.get(currentTextSegment).begin ==
+					textSegments.get(currentTextSegment).end)
+				textSegments.remove(currentTextSegment);
+		// find position of the new segment in the list so that the list is sorted by MemSegment.begin
+		int idx;
+		for (idx = 0; idx < textSegments.size(); ++idx) {
+			if (textBegin < textSegments.get(idx).begin)
+				break;
+		}
+		textSegments.add(idx, new MemSegment(textBegin, textBegin));
+		currentTextSegment = idx;
 		// fill text segment with bubbles: everything after textBegin should be zero
+		// Needed because the simulator reads some (bubble-)instructions after the last instruction
 		Arrays.fill(byteArray, textBegin, byteArray.length, (byte)0);
-	}
-
-	/**
-	 * 
-	 * @return end of data
-	 */
-	public int getDataEnd() {
-		return dataEnd;
 	}
 
 	/**
@@ -170,18 +192,8 @@ public class MemoryBuffer {
 	 * @param dataEnd textEnd is only set, if it is larger than the current end pointer of the data section.
 	 */
 	public void setDataEnd(int dataEnd) {
-		if (dataEnd > this.dataEnd)
-		{
-			this.dataEnd = dataEnd;
-		}
-	}
-
-	/**
-	 * 
-	 * @return end of text
-	 */
-	public int getTextEnd() {
-		return textEnd;
+		if (dataEnd > dataSegments.get(currentDataSegment).end)
+			dataSegments.get(currentDataSegment).end = dataEnd;
 	}
 
 	/**
@@ -191,12 +203,60 @@ public class MemoryBuffer {
 	 * @param textEnd textEnd is only set, if it is larger than the current end pointer of the text section.
 	 */
 	public void setTextEnd(int textEnd) {
-		if(textEnd > this.textEnd)
-		{
-			this.textEnd = textEnd;
-		}
+		if (textSegments.get(currentTextSegment).end < textEnd)
+			textSegments.get(currentTextSegment).end = textEnd;
 	}
 
+	/**
+	 * Tests if some segments overlap
+	 * @return "" empty string if no segments overlap,
+	 * 		in case of an overlap: a string informing about the two segments
+	 */
+	public String segmentsOverlap() {
+		ArrayList<MemSegment> segments = new ArrayList<MemSegment>(dataSegments);
+		// sort textSegments into sorted list of dataSegments
+		int textIdx = 0;
+		// sort textSegments into list of dataSegments
+		for (int i = 0; textIdx < textSegments.size() && i < segments.size(); ++i) {
+			if (textSegments.get(textIdx).begin < segments.get(i).begin) {
+				segments.add(i, textSegments.get(textIdx));
+				textIdx++;
+			}
+		}
+		// add remaining textSegments to the end of the list
+		for (;textIdx < textSegments.size(); ++textIdx)
+			segments.add(textSegments.get(textIdx));
+
+		// test if two subsequent segments overlap
+		for (int i = 1; i < segments.size(); ++i) {
+			MemSegment first = segments.get(i-1), second = segments.get(i);
+		
+			// test if second segment starts within the first segment
+			// second.begin < first.end instead of <= because end is exclusive
+			if (first.begin <= second.begin && second.begin < first.end) {
+				// Create String about the type of segments (data/text) and their start and ends
+				String s = (dataSegments.contains(first) ? "data segment " : "text segment ") + 
+						"0x" + Integer.toHexString(first.begin) + " - 0x" + 
+						Integer.toHexString(first.end) + " and " +
+						(dataSegments.contains(second) ? "data segment " : "text segment ") + 
+						"0x" + Integer.toHexString(second.begin) + " - 0x" + 
+						Integer.toHexString(second.end) + " overlap.";
+				return s;
+			}
+		}
+		return "";
+	}
+	
+	/**
+	 * checks all data segment if it contains the address
+	 */
+	public boolean isInDataSegment(int address) {
+		for (MemSegment s : dataSegments) {
+			if (s.begin <= address && address < s.end)
+				return true;
+		}
+		return false;
+	}
 	/**
 	 * 
 	 * @return size of buffer
@@ -332,8 +392,8 @@ public class MemoryBuffer {
 	public String toString() {
 		StringBuffer strBuf = new StringBuffer(4 * this.size());
 		strBuf.append("entryPoint: 0x" + Integer.toHexString(getEntryPoint()) + "\n");
-		strBuf.append("dataBegin: 0x" + Integer.toHexString(getDataBegin()) + "\n");
-		strBuf.append("textBegin: 0x" + Integer.toHexString(getTextBegin()) + "\n");
+		strBuf.append("dataBegin: 0x" + Integer.toHexString(getDataBegin(0)) + "\n");
+		strBuf.append("textBegin: 0x" + Integer.toHexString(getTextBegin(0)) + "\n");
 		for (int i = 0; i < size(); i++) {
 			if (i % LINE_WRAPPING == 0) {
 				strBuf.append("\n" + String.format("%1$04x", i) + ":");
@@ -351,6 +411,16 @@ public class MemoryBuffer {
 			byte[] tmp = new byte[size];
 			System.arraycopy(byteArray, 0, tmp, 0, byteArray.length);
 			byteArray = tmp;
+		}
+	}
+	
+	private class MemSegment {
+		// begin is inclusive, end is exclusive
+		public int begin, end;
+		
+		public MemSegment(int begin, int end) {
+			this.begin = begin;
+			this.end = end;
 		}
 	}
 }

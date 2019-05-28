@@ -43,9 +43,11 @@ public class Preference
     public static final String lookAndFeel = "lookandfeel";
     public static final String fontSize = "fontsize";
     public static final String saveChooserPathPreferenceKey = "savefilechooserpath";
+
+    public static final String displayRegistersAsHex = "displayRegistersAsHex";
     public static final String initializeOptionPreferenceKey = "initializeoption";
     public static final String showInitializeOptionMessage = "showinitoptionmessage";
-    public static final String displayRegistersAsHex = "displayRegistersAsHex";
+    public static final String stopOnMemoryWarningPreferenceKey = "stopOnMemoryWarning";
 
 
     public static String getSaveFileChooserPath() {
@@ -64,6 +66,10 @@ public class Preference
 
     public static int getFontSize() {
     	return pref.getInt(Preference.fontSize, 12);
+    }
+
+    public static boolean isStopOnMemoryWarningEnabled() {
+        return Preference.pref.getBoolean(stopOnMemoryWarningPreferenceKey, false);
     }
     // TODO: Also move all configuration stuff into this file.
 }

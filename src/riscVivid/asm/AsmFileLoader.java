@@ -94,10 +94,13 @@ public class AsmFileLoader
         textOut.println("file=" + parts + BINARY);
         textOut.println("code_start_addr=0x0");
         textOut.println("entry_point=" + memory.getEntryPoint());
-        textOut.println("text_begin=0x" + Integer.toHexString(memory.getTextBegin()));
-        textOut.println("text_end=0x" + Integer.toHexString(memory.getTextEnd()));
-        textOut.println("data_begin=0x" + Integer.toHexString(memory.getDataBegin()));
-        textOut.println("data_end=0x" + Integer.toHexString(memory.getDataEnd()));
+        // TODO: support for multiple text segments, if needed
+        textOut.println("text_begin=0x" + Integer.toHexString(memory.getTextBegin(0)));
+        textOut.println("text_end=0x" + Integer.toHexString(memory.getTextEnd(memory.getNumTextSegments()-1)));
+        for (int i = 0; i < memory.getNumDataSegments(); ++i) {
+            textOut.println("data_begin_" + i + "=0x" + Integer.toHexString(memory.getDataBegin(i)));
+            textOut.println("data_end_" + i + "=0x" + Integer.toHexString(memory.getDataEnd(i)));
+        }
         textOut.println("print_file=" + parts + ".out");
         textOut.println("log_file=" + parts + ".log");
         textOut.println("log4j=log4j.properties");

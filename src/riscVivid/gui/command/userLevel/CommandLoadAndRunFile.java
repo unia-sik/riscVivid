@@ -30,7 +30,7 @@ import riscVivid.gui.command.systemLevel.CommandOpenCodeFile;
 import riscVivid.gui.command.systemLevel.CommandResetSimulator;
 import riscVivid.gui.command.systemLevel.CommandSaveFrameConfigurationSysLevel;
 import riscVivid.gui.command.systemLevel.CommandStartExecuting;
-import riscVivid.gui.util.AskForSave;
+import riscVivid.gui.util.DialogWrapper;
 
 public class CommandLoadAndRunFile implements Command
 {
@@ -49,7 +49,7 @@ public class CommandLoadAndRunFile implements Command
         {
             if (!mf.isEditorTextSaved())
             {
-                if(!AskForSave.askAndSave(true))
+                if(!DialogWrapper.askForSave(true))
                 	return;
             }
             //save current window position

@@ -131,10 +131,11 @@ public class RiscVividSimulator
         logger.info("loading:" + config.getProperty("file"));
 
 
-        sim_cycles = new Integer(config.getProperty("cycles"));
+        sim_cycles = Integer.parseInt(config.getProperty("cycles"));
 
         pipeline = new PipelineContainer();
-        pipeline.setMainMemory(new MainMemory(config.getProperty("file"), stringToUint32(config.getProperty("code_start_addr")).getValue(), (short) stringToUint32(config.getProperty("memory_latency")).getValue()));
+        pipeline.setMainMemory(new MainMemory(config.getProperty("file"), stringToUint32(config.getProperty("code_start_addr")).getValue(),
+        		(short) stringToUint32(config.getProperty("memory_latency")).getValue()));
         pipeline.setInstructionMemory(new InstructionMemory(pipeline.getMainMemory(), config));
         pipeline.setDataMemory(new DataMemory(pipeline.getMainMemory(), config));
         pipeline.setFetchStage(new Fetch(new uint32(stringToUint32(config.getProperty("entry_point"))), pipeline.getInstructionMemory()));
