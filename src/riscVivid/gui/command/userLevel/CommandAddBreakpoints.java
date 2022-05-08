@@ -28,23 +28,18 @@ public class CommandAddBreakpoints implements Command {
             if (bp.contains(" ")) continue;
 
             try {
-                try {
-                    var line = Integer.parseInt(bp);
+                var line = Integer.parseInt(bp);
 
-                    if (tln.isBreakpoint(line)) {
-                        tln.removeBreakpoint(line);
-                    } else {
-                        tln.addBreakpoint(line);
-                    }
-                    tln.updateUI();
-
-                } catch (NumberFormatException e) {
-                    DialogWrapper.showErrorDialog(MainFrame.getInstance(), "NumberFormatException during adding breakpoints: " + e.getMessage());
+                if (tln.isBreakpoint(line)) {
+                    tln.removeBreakpoint(line);
+                } else {
+                    tln.addBreakpoint(line);
                 }
-            } catch (BadLocationException e) {
-                DialogWrapper.showErrorDialog(MainFrame.getInstance(), "BadLocationException during adding breakpoints: " + e.getMessage());
+
+                tln.updateUI();
+            } catch (BadLocationException | NumberFormatException e) {
+                DialogWrapper.showErrorDialog(MainFrame.getInstance(), e.getClass().getSimpleName() + " during adding breakpoints: " + e.getMessage());
             }
         }
-
     }
 }
