@@ -20,14 +20,15 @@
  ******************************************************************************/
 package riscVivid.gui.internalframes.concreteframes.editor;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
+import riscVivid.gui.GUI_CONST.OpenDLXSimState;
+import riscVivid.gui.MainFrame;
+import riscVivid.gui.Preference;
+import riscVivid.gui.command.EventCommandLookUp;
+import riscVivid.gui.command.userLevel.*;
+import riscVivid.gui.internalframes.FrameConfiguration;
+import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
+import riscVivid.gui.internalframes.factories.InternalFrameFactory;
+import riscVivid.gui.util.MWheelFontSizeChanger;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -37,18 +38,14 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
-
-import javax.swing.undo.*;
-
-import riscVivid.gui.MainFrame;
-import riscVivid.gui.Preference;
-import riscVivid.gui.GUI_CONST.OpenDLXSimState;
-import riscVivid.gui.command.EventCommandLookUp;
-import riscVivid.gui.command.userLevel.*;
-import riscVivid.gui.internalframes.FrameConfiguration;
-import riscVivid.gui.internalframes.OpenDLXSimInternalFrame;
-import riscVivid.gui.internalframes.factories.InternalFrameFactory;
-import riscVivid.gui.util.MWheelFontSizeChanger;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.net.URL;
+import java.util.Date;
 
 @SuppressWarnings("serial")
 public final class EditorFrame extends OpenDLXSimInternalFrame implements ActionListener, KeyListener, UndoableEditListener
@@ -71,6 +68,7 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
     private JButton saveAs;
     private JButton save;
     private JButton clear;
+    private JButton addbreakpoints;
     private JButton find;
     private JButton enlarge;
     private JButton reduce;
@@ -190,6 +188,7 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
         add(scrollPane, BorderLayout.CENTER);
 
         clear = createButton("New", "Clear All [ALT+C]", KeyEvent.VK_C, "/img/icons/tango/clear.png");
+        addbreakpoints = createButton("Add Breakpoints", "Add Breakpoints [ALT+B]", KeyEvent.VK_B, "/img/icons/tango/breakpoint.png");
         load = createButton("Open...", "Open Program [CTRL+O]", KeyEvent.VK_O, "/img/icons/tango/load.png");
         addcode = createButton("Add Code...", "Add Code to Programms... [CTRL+I]", KeyEvent.VK_I, "/img/icons/tango/addcode.png");
         save = createButton("Save", "Save current file[CTRL+S]", KeyEvent.VK_S, "/img/icons/tango/save.png");
@@ -212,6 +211,8 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
         EventCommandLookUp.put(save, new CommandSave());
         EventCommandLookUp.put(saveAs, new CommandSaveAs());
         EventCommandLookUp.put(clear, new CommandNewFile(mf));
+
+        EventCommandLookUp.put(addbreakpoints, new CommandAddBreakpoints(tln));
 //        EventCommandLookUp.put(undo, undoCommand);   // this is done in setUndoManager()
 //        EventCommandLookUp.put(redo, redoCommand);
         EventCommandLookUp.put(enlarge, new CommandChangeFontSize(+1));
@@ -221,7 +222,7 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
 
         JToolBar toolBar = new JToolBar("Editor toolbar");
 
-        for (JButton j : new JButton[]{clear, load, addcode, save, saveAs, assem, loadandassem, undo, redo,
+        for (JButton j : new JButton[]{clear, addbreakpoints, load, addcode, save, saveAs, assem, loadandassem, undo, redo,
                 reduce, enlarge, find, reformat})
         {
             j.addActionListener(this);
@@ -379,13 +380,13 @@ public final class EditorFrame extends OpenDLXSimInternalFrame implements Action
     {
         if (currentState == OpenDLXSimState.RUNNING)
         {
-            for (JButton j : new JButton[] {clear, load, addcode, save, saveAs, assem, loadandassem, undo, redo,
+            for (JButton j : new JButton[] {clear, addbreakpoints, load, addcode, save, saveAs, assem, loadandassem, undo, redo,
                     reduce, enlarge, find, reformat})
                 j.setEnabled(false);
         }
         else
         {
-            for (JButton j : new JButton[] {clear, load, addcode, save, saveAs, assem, loadandassem, undo, redo,
+            for (JButton j : new JButton[] {clear, addbreakpoints, load, addcode, save, saveAs, assem, loadandassem, undo, redo,
                     reduce, enlarge, find, reformat})
                 j.setEnabled(true);
         }
