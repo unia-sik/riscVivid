@@ -1,0 +1,50 @@
+package riscVivid.gui.command.userLevel;
+
+import riscVivid.gui.MainFrame;
+import riscVivid.gui.command.Command;
+import riscVivid.gui.dialog.Input;
+import riscVivid.gui.internalframes.concreteframes.editor.TextNumberingPanel;
+import riscVivid.gui.util.DialogWrapper;
+
+import javax.swing.text.BadLocationException;
+
+public class CommandAddBreakpoints implements Command {
+    private TextNumberingPanel tln;
+
+    public CommandAddBreakpoints(TextNumberingPanel tln) {
+        this.tln = tln;
+    }
+
+    @Override
+    public void execute() {
+        var input = Input.getInstance(MainFrame.getInstance());
+        input.update("");
+
+        var inputReturn = input.getInput();
+        if (inputReturn.equals("")) return;
+
+        var breakpoints = inputReturn.split(" ");
+        for (String bp : breakpoints) {
+            if (bp.contains(" ")) continue;
+
+            try {
+                try {
+                    var line = Integer.parseInt(bp);
+
+                    if (tln.isBreakpoint(line)) {
+                        tln.removeBreakpoint(line);
+                    } else {
+                        tln.addBreakpoint(line);
+                    }
+                    tln.updateUI();
+
+                } catch (NumberFormatException e) {
+                    DialogWrapper.showErrorDialog(MainFrame.getInstance(), "NumberFormatException during adding breakpoints: " + e.getMessage());
+                }
+            } catch (BadLocationException e) {
+                DialogWrapper.showErrorDialog(MainFrame.getInstance(), "BadLocationException during adding breakpoints: " + e.getMessage());
+            }
+        }
+
+    }
+}
