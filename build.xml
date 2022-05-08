@@ -78,8 +78,7 @@
 			  <zipfileset dir="." includes="CHANGELOG"/>
 			  <zipfileset dir="." includes="log4j*"/>
 			  <zipfileset dir="." includes="run_riscVivid.sh"/>
-			  <zipfileset dir="./apps/dlx_apps/" prefix="apps/dlx_apps" includes="*.s"/>
-			  <zipfileset dir="./apps/mips_apps/" prefix="apps/mips_apps" includes="**/*.cfg, **/*.c, **/*.h, **/*.s, **/*.sh, **/Makefile, **/*.txt, **/README"/>
+			  <zipfileset dir="./apps/examples/" prefix="apps/examples" includes="*.s"/>
 		  </zip>
 	  </target>
     <target depends="build_and_package,generate-doxygen-docs,deploy" name="all"/>
