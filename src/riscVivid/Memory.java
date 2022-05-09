@@ -79,7 +79,7 @@ public class Memory
 							lv = dmem.read_u16(alu_outLO, true).getValue();
 							break;
 						case UHWORD:
-							lv = (long) dmem.read_u8(alu_outLO, true).getValue() & 0xffff;
+							lv = (long) dmem.read_u16(alu_outLO, true).getValue() & 0xffff;
 							break;
 						case WORD:
 							lv = dmem.read_u32(alu_outLO, true).getValue();
