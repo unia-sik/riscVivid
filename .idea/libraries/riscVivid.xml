@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="riscVivid">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/riscVivid.jar!/" />
+      <root url="jar://$PROJECT_DIR$/riscVivid_deploy.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

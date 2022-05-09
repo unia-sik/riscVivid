@@ -1,0 +1,7 @@
+----------------------------
+Install Dependencies
+----------------------------
+
+- Obtain flatlaf-2.2 from
+  https://search.maven.org/artifact/com.formdev/flatlaf/2.2/jar
+  and add to this directory

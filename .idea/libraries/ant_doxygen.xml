@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ant_doxygen">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_local/ant-doxygen/lib/ant_doxygen.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

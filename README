@@ -27,6 +27,9 @@ Install Dependencies
 - Obtain apache-log4j from 
   http://logging.apache.org/log4j/1.2/download.html 
   and extract to lib_local/apache-log4j-1.2.17
+- For more themes copy flatlaf-2.2.jar from
+  https://search.maven.org/artifact/com.formdev/flatlaf/2.2/jar
+  and copy the jar file into lib_local/flatlaf-2.2
 
 ----------------------------
 Building

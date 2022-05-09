@@ -1,133 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3975ecf2-0586-40c6-aeb8-d59f2fc6c7ab" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/riscVivid/gui/command/userLevel/CommandAddBreakpoints.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/riscVivid/gui/internalframes/concreteframes/editor/EditorFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/riscVivid/gui/internalframes/concreteframes/editor/EditorFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/riscVivid/gui/internalframes/concreteframes/editor/TextNumberingPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/riscVivid/gui/internalframes/concreteframes/editor/TextNumberingPanel.java" afterDir="false" />
-    </list>
+    <list default="true" id="68f41261-265d-41c3-be55-a7b2b6724e3e" name="Changes" comment="Add dark theme `DarkLaf`" />
+    <list id="ef28b47a-444c-4682-86d7-8f98c19b1745" name="Add dark theme `DarkLaf`" comment="Add dark theme `DarkLaf`" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CodeInsightWorkspaceSettings">
-    <option name="optimizeImportsOnTheFly" value="true" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
-        <option value="Class" />
+        <option value="ekstdo &lt;minhala2003@mailo.com&gt;" />
       </list>
     </option>
-  </component>
-  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="SOFT" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
-  </component>
-  <component name="ProjectId" id="28tGE39oj4YXAFtOfKUFB7Eg7gb" />
+  <component name="ProjectId" id="28wEerDYqdci1A09JIkFp3RqlGY" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "jdk.selected.JAVA_MODULE": "zulu-17",
-    "last_opened_file_path": "P:/Andere Dateien/STUFF/Coding/Java/riscVivid/lib_local/apache-log4j-1.2.17/log4j-1.2.17.jar",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.3100276",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;vcs.patch.to.clipboard&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager">
-    <configuration name="RiscVividSimulatorMain" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="riscVivid.main.RiscVividSimulatorMain" />
-      <module name="riscVivid" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="riscVivid.main.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Application.RiscVividSimulatorMain" />
-      </list>
-    </recent_temporary>
-  </component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3975ecf2-0586-40c6-aeb8-d59f2fc6c7ab" name="Changes" comment="" />
-      <created>1652028354243</created>
+      <changelist id="68f41261-265d-41c3-be55-a7b2b6724e3e" name="Changes" comment="" />
+      <changelist id="ef28b47a-444c-4682-86d7-8f98c19b1745" name="Add dark theme `DarkLaf`" comment="" />
+      <created>1652119345264</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1652028354243</updated>
+      <updated>1652119345264</updated>
     </task>
+    <task id="LOCAL-00001" summary="Add dark theme `DarkLaf`">
+      <created>1652119764530</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1652119764530</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add dark theme `DarkLaf`">
+      <created>1652119838316</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1652119838316</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add dark theme `DarkLaf`">
+      <created>1652120311727</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1652120311727</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
-        <entry key="82cd9082-9204-4c81-9ac0-8bf5b00fa3a6">
-          <value>
-            <State />
-          </value>
-        </entry>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="dark-mode" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
-      </map>
-    </option>
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="82cd9082-9204-4c81-9ac0-8bf5b00fa3a6" value="TOOL_WINDOW" />
       </map>
     </option>
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="java-exception">
-          <properties class="java.lang.NullPointerException" package="java.lang" />
-          <option name="timeStamp" value="1" />
-        </breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>jar://B:/Programme/Java/Sdk/azul-17.0.3/lib/src.zip!/java.base/java/lang/Class.java</url>
-          <line>2914</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>jar://B:/Programme/Java/Sdk/azul-17.0.3/lib/src.zip!/java.base/java/lang/Class.java</url>
-          <line>2937</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>jar://B:/Programme/Java/Sdk/azul-17.0.3/lib/src.zip!/java.base/java/lang/ClassLoader.java</url>
-          <line>1398</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>jar://B:/Programme/Java/Sdk/azul-17.0.3/lib/src.zip!/java.base/jdk/internal/loader/BuiltinClassLoader.java</url>
-          <line>537</line>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix reading 8 instead of 16 bits in case `UHWORD`" />
+    <MESSAGE value="Add dark theme `DarkLaf`" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add dark theme `DarkLaf`" />
   </component>
 </project>
