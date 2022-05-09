@@ -17,18 +17,18 @@ public class CommandAddBreakpoints implements Command {
 
     @Override
     public void execute() {
-        var input = Input.getInstance(MainFrame.getInstance());
+        Input input = Input.getInstance(MainFrame.getInstance());
         input.update("");
 
-        var inputReturn = input.getInput();
+        String inputReturn = input.getInput();
         if (inputReturn.equals("")) return;
 
-        var breakpoints = inputReturn.split(" ");
+        String[] breakpoints = inputReturn.split(" ");
         for (String bp : breakpoints) {
             if (bp.contains(" ")) continue;
 
             try {
-                var line = Integer.parseInt(bp);
+                int line = Integer.parseInt(bp);
 
                 if (tln.isBreakpoint(line)) {
                     tln.removeBreakpoint(line);

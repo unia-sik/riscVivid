@@ -288,4 +288,11 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener
         return undoMgr;
     }
 
+    public void setDesktopBackground(Color newBackground) {
+        desktop.setBackground(newBackground);
+    }
+
+    public Color getMenuBarColor() {
+        return menuBar.getBackground();
+    }
 }

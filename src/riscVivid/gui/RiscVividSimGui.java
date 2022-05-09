@@ -22,6 +22,8 @@ package riscVivid.gui;
 
 import java.awt.Font;
 
+import java.awt.Color;
+
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -34,6 +36,8 @@ public class RiscVividSimGui
 
     public static void riscVividGui_main()
     {
+        UIManager.installLookAndFeel("DarkLaf", "com.formdev.flatlaf.FlatDarkLaf");
+
         //set the Metal LookAndFeel as default if it exists, otherwise use the system default
         String lafClassName = UIManager.getLookAndFeel().getClass().getCanonicalName();
         for (UIManager.LookAndFeelInfo lafInfo : UIManager.getInstalledLookAndFeels()) {
@@ -57,7 +61,7 @@ public class RiscVividSimGui
                 System.err.println("Failed to set look and feel '" + lafClassName + "'");
                 e.printStackTrace();
             }
-            else
+            else if (!lafClassName.startsWith("com"))
             {
                 lafClassName = currentLafClassName;
                 // store new (valid) L&F in preferences
@@ -69,11 +73,13 @@ public class RiscVividSimGui
         // set selected L&F
         setLookAndFeelWithoutTreeUpdate(lafClassName);
         // create MainFrame
-        MainFrame.getInstance();
+        MainFrame mainFrameInstance = MainFrame.getInstance();
+
+        mainFrameInstance.setDesktopBackground(mainFrameInstance.getMenuBarColor());
 
         // Font size options: set initial font size
         CommandChangeFontSize.setFontSize(Preference.getFontSize());
-        MWheelFontSizeChanger.getInstance().add(MainFrame.getInstance());
+        MWheelFontSizeChanger.getInstance().add(mainFrameInstance);
     }
 
     //set look and feel, but do not update the Swing Component Tree
@@ -102,5 +108,8 @@ public class RiscVividSimGui
     {
         setLookAndFeelWithoutTreeUpdate(lafClassName);
         SwingUtilities.updateComponentTreeUI(MainFrame.getInstance());
+
+        MainFrame mainFrameInstance = MainFrame.getInstance();
+        mainFrameInstance.setDesktopBackground(mainFrameInstance.getMenuBarColor());
     }
 }
