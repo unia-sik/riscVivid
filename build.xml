@@ -7,6 +7,7 @@
     <path id="riscVivid.classpath">
         <pathelement location="bin"/>
         <pathelement location="lib_local/apache-log4j-1.2.17/log4j-1.2.17.jar"/>
+		<pathelement location="lib_local/flatlaf-2.2/flatlaf-2.2.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -58,6 +59,7 @@
 			</manifest>
             <fileset dir="./bin"/>
 			<zipfileset includes="**/*.class" src="lib_local/apache-log4j-1.2.17/log4j-1.2.17.jar"/>
+			<zipfileset includes="**/*" src="lib_local/flatlaf-2.2/flatlaf-2.2.jar"/>
         </jar>
     </target>
     <target depends="build,create_run_jar" name="build_and_package"/>
@@ -65,7 +67,7 @@
 		  <taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask" 
 		    classpath="lib_local/ant-doxygen/lib/ant_doxygen.jar" />
 		  <doxygen configFilename="riscVivid.Doxyfile">
-		           <property name="INPUT" value="${srcdir}" />
+		           <property name="INPUT" value="src" />
 		           <property name="RECURSIVE" value="yes" />
 		  </doxygen>
 	  </target>
@@ -78,8 +80,7 @@
 			  <zipfileset dir="." includes="CHANGELOG"/>
 			  <zipfileset dir="." includes="log4j*"/>
 			  <zipfileset dir="." includes="run_riscVivid.sh"/>
-			  <zipfileset dir="./apps/dlx_apps/" prefix="apps/dlx_apps" includes="*.s"/>
-			  <zipfileset dir="./apps/mips_apps/" prefix="apps/mips_apps" includes="**/*.cfg, **/*.c, **/*.h, **/*.s, **/*.sh, **/Makefile, **/*.txt, **/README"/>
+			  <zipfileset dir="./apps/examples/" prefix="apps/examples" includes="*.s"/>
 		  </zip>
 	  </target>
     <target depends="build_and_package,generate-doxygen-docs,deploy" name="all"/>

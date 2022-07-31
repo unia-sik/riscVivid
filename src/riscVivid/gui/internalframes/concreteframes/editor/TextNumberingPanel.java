@@ -20,23 +20,24 @@
  ******************************************************************************/
 package riscVivid.gui.internalframes.concreteframes.editor;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-
 import riscVivid.datatypes.uint32;
 import riscVivid.gui.MainFrame;
 import riscVivid.gui.Preference;
 import riscVivid.gui.internalframes.Updateable;
 import riscVivid.util.BreakpointManager;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
 
 //TODO: add popup menu
 @SuppressWarnings("serial")
@@ -157,6 +158,18 @@ public class TextNumberingPanel extends JPanel
         }
 
         return popupMenu;
+    }
+
+    public boolean isBreakpoint(int lineInEditor) {
+        return bm.isBreakpoint(lineInEditor);
+    }
+
+    public void removeBreakpoint(int lineInEditor) {
+        bm.removeBreakpoint(lineInEditor);
+    }
+
+    public void addBreakpoint(int lineInEditor) throws BadLocationException {
+        bm.addBreakpoint(lineInEditor, getLineText(lineInEditor));
     }
 
     public boolean getUpdateFont()
