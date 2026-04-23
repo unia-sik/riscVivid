@@ -1,0 +1,237 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{parskip}
+\usepackage{amssymb}
+
+\geometry{margin=2.5cm}
+
+\begin{document}
+	
+	\begin{center}
+		\Huge{\textbf{RISC-V Befehlsübersicht}}
+	\end{center}
+	\vspace{12pt}
+	In den Übungen zur Vorlesung \textit{Systemnahe Informatik} wird nur ein Teil des RISC-V-Befehlssatzes aktiv verwendet.
+	Dabei handelt es sich um den RV32I-Basisbefehlssatz und die Multiplikations- und Divisionserweiterung RV32M.
+	Das bedeutet, dass keine 64-Bit- und Gleitkommaarithmetik verwendet wird.
+	Dadurch bleibt die Zahl der Befehle sehr überschaubar.
+	
+	% -----------------------------------------------------------------------
+	\section{Unbedingte Sprungbefehle}
+	
+	Bei unbedingten Sprüngen wird der Programmzähler \texttt{pc} auf einen neuen Wert gesetzt.
+	Um Rücksprünge zu ermöglichen, kann der vorherige Wert des \texttt{pc}-Registers im Register \texttt{ra} gesichert werden.
+	
+	\begin{center}
+		\begin{tabular}{>{\ttfamily}lp{11cm}}
+			\toprule
+			\normalfont\textbf{Befehl} & \textbf{Beschreibung} \\
+			\midrule
+			j Label   & Springt zur Adresse \textit{Label}. \\
+			jr Rs     & Indirekter Sprung zu der Adresse, die in Register \textit{Rs} steht. \\
+			jal Label & Springt zur Adresse \textit{Label}.
+						Der alte \texttt{pc} wird im Register \texttt{ra} als Rücksprungadresse gesichert.
+						Dient dem Unterprogrammaufruf. \\
+			jalr Rs   & Indirekter Sprung zu der Adresse, die in Register \textit{Rs} steht.
+						Der alte \texttt{pc} wird im Register \texttt{ra} als Rücksprungadresse gesichert. \\
+			ret       & Springe zur Adresse in Register \texttt{ra}. Dient dem Rücksprung aus einem Unterprogramm. \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	% -----------------------------------------------------------------------
+	\section{Bedingte Verzweigungsbefehle}
+	
+	Bei bedingten Sprüngen werden zuerst zwei Register miteinander verglichen.
+	Trifft die kodierte	Bedingung zu, so wird der Sprung ausgeführt, andernfalls nicht.
+	Es gibt keine Sprünge für die Bedingungen „kleiner gleich" und „echt größer als".
+	Diese realisiert man, indem man	\texttt{bge} und \texttt{blt} verwendet, aber \textit{Rs} und \textit{Rt} vertauscht.
+	
+	Beim vorzeichenbehafteten Vergleich werden die beiden Register im Zweierkomplement interpretiert, d.\,h. sie stellen Zahlen von $-2\,147\,483\,648$ bis $+2\,147\,483\,647$ dar -- andernfalls werden sie als rein positive Zahlen im Bereich von $0$ bis $4\,294\,967\,295$ interpretiert.
+	Es gibt keine Vergleiche mit Immediate-Konstanten, d.\,h. Konstanten müssen immer zuerst in ein	Register geladen werden.
+	
+	\begin{center}
+		\begin{tabular}{>{\ttfamily}lp{7.5cm}}
+			\toprule
+			\normalfont\textbf{Befehl} & \textbf{Beschreibung} \\
+			\midrule
+			beq  Rs, Rt, Label & Springe, wenn $Rs = Rt$ \\
+			bne  Rs, Rt, Label & Springe, wenn $Rs \neq Rt$ \\
+			blt  Rs, Rt, Label & Springe, wenn $Rs < Rt$ (vorzeichenbehaftet) \\
+			bge  Rs, Rt, Label & Springe, wenn $Rs \geq Rt$ (vorzeichenbehaftet) \\
+			bltu Rs, Rt, Label & Springe, wenn $Rs < Rt$ (nur positive Zahlen) \\
+			bgeu Rs, Rt, Label & Springe, wenn $Rs \geq Rt$ (nur positive Zahlen) \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	\newpage
+	
+	% -----------------------------------------------------------------------
+	\section{Arithmetische Befehle mit Konstante}
+	
+	Die folgenden Ganzzahl-Operationen verknüpfen den Inhalt eines Registers \textit{Rs} mit einem Im\-mediate-Wert \textit{Imm} im Bereich von $-2048$ bis $+2047$.
+	Bei den Bitschiebebefehlen darf der Im\-medi\-ate-Wert nur zwischen $0$ und $31$ liegen.
+	Das Ergebnis wird in ein weiteres Register \textit{Rd} geschrieben.
+	
+	\begin{center}
+		\begin{tabular}{>{\ttfamily}lp{11cm}}
+			\toprule
+			\normalfont\textbf{Befehl} & \textbf{Beschreibung} \\
+			\midrule
+			add Rd, Rs, Imm & Addition \\
+			slt Rd, Rs, Imm & Vorzeichenbehafteter Vergleich von \textit{Rs} und \textit{Imm}.
+								Wenn \textit{Rs} kleiner ist, wird $1$ in \textit{Rd} geschrieben, andernfalls $0$. \\
+			sltu Rd, Rs, Imm & Vergleich der vorzeichenlosen Werte von \textit{Rs} und \textit{Imm}.
+								Wenn \textit{Rs} kleiner ist, wird $1$ in \textit{Rd} geschrieben, andernfalls $0$. \\
+			and Rd, Rs, Imm & Bitweise Und-Verknüpfung \\
+			or  Rd, Rs, Imm & Bitweise Oder-Verknüpfung \\
+			xor Rd, Rs, Imm & Bitweise Exklusiv-Oder-Verknüpfung \\
+			sll Rd, Rs, Imm & Bitweises Verschieben nach links, auffüllen mit Nullen \\
+			srl Rd, Rs, Imm & Bitweises Verschieben nach rechts, auffüllen mit Nullen \\
+			sra Rd, Rs, Imm & Bitweises Verschieben nach rechts, das Vorzeichenbit wird entsprechend kopiert. \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	% -----------------------------------------------------------------------
+	\section{Arithmetische Befehle auf Registern}
+	
+	Alle arithmetischen Befehle mit Konstanten können auch ausschließlich auf Register angewendet werden, d.\,h. der Inhalt von Register \textit{Rs} wird mit dem Inhalt von Register \textit{Rt} verknüpft und in Register \textit{Rd} geschrieben.
+	Bei den bitweisen Verschiebungen werden nur die unteren 5\,Bit von \textit{Rt} als Verschiebungsweite interpretiert, die restlichen Bits werden ignoriert.
+	
+	Im Vergleich zu den arithmetischen Befehlen mit Konstante gibt es einige zusätzliche Verknüpfungen.
+	Dies sind die Multiplikations- und Divisionsbefehle und die Subtraktion.
+	Letztere hat keine Entsprechung mit unmittelbarer Konstante, da stattdessen eine negative Zahl addiert werden kann.
+	
+	\begin{center}
+		\begin{tabular}{>{\ttfamily}lp{11cm}}
+			\toprule
+			\normalfont\textbf{Befehl} & \textbf{Beschreibung} \\
+			\midrule
+			add  Rd, Rs, Rt & Addition \\
+			slt  Rd, Rs, Rt & Vorzeichenbehafteter Vergleich von \textit{Rs} und \textit{Rt}.
+								Wenn \textit{Rs} kleiner ist, wird $1$ in \textit{Rd} geschrieben, andernfalls $0$. \\
+			sltu Rd, Rs, Rt & Vergleich der vorzeichenlosen Werte von \textit{Rs} und \textit{Rt}.
+								Wenn \textit{Rs} kleiner ist, wird $1$ in \textit{Rd} geschrieben, andernfalls $0$. \\
+			and  Rd, Rs, Rt & Bitweise Und-Verknüpfung \\
+			or   Rd, Rs, Rt & Bitweise Oder-Verknüpfung \\
+			xor  Rd, Rs, Rt & Bitweise Exklusiv-Oder-Verknüpfung \\
+			sll  Rd, Rs, Rt & Bitweises Verschieben nach links, auffüllen mit Nullen \\
+			srl  Rd, Rs, Rt & Bitweises Verschieben nach rechts, auffüllen mit Nullen \\
+			sra  Rd, Rs, Rt & Bitweises Verschieben nach rechts, das Vorzeichenbit wird entsprechend kopiert. \\
+			sub  Rd, Rs, Rt & Subtraktion \\
+			mul  Rd, Rs, Rt & Multiplikation \\
+			div  Rd, Rs, Rt & Division (vorzeichenbehaftet) \\
+			divu Rd, Rs, Rt & Division (nur positive Zahlen) \\
+			rem  Rd, Rs, Rt & Divisionsrest (vorzeichenbehaftet) \\
+			remu Rd, Rs, Rt & Divisionsrest (nur positive Zahlen) \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	% -----------------------------------------------------------------------
+	\section{Speicherzugriffe}
+	
+	Es gibt nur eine Adressierungsart: Register-indirekt mit Verschiebung.
+	Das heißt, zur Berechnung der Speicheradresse wird eine Konstante \textit{Imm} (im Bereich von $-2048$ bis $+2047$) zum Inhalt des Registers \textit{Rs} addiert.
+	Indem die Konstante auf $0$ gesetzt wird oder das Register \texttt{zero} verwendet wird, können damit auch register-indirekte und direkte Adressierung umgesetzt werden.
+	
+	\begin{center}
+		\begin{tabular}{>{\ttfamily}lp{11cm}}
+			\toprule
+			\normalfont\textbf{Befehl} & \textbf{Beschreibung} \\
+			\midrule
+			lb  Rd, Imm(Rs) & Lade einen 8-Bit-Wert von der Adresse $Imm+Rs$ und erweitere den Wert entsprechend des Vorzeichens auf 32\,Bit, die in Register \textit{Rd} geschrieben werden. \\
+			lh  Rd, Imm(Rs) & Lade einen 16-Bit-Wert von der Adresse $Imm+Rs$ und erweitere den Wert entsprechend des Vorzeichens auf 32\,Bit, die in Register \textit{Rd} geschrieben werden. \\
+			lw  Rd, Imm(Rs) & Lade einen 32-Bit-Wert von der Adresse $Imm+Rs$ und schreibe ihn in Register \textit{Rd}. \\
+			lbu Rd, Imm(Rs) & Lade einen 8-Bit-Wert von der Adresse $Imm+Rs$ und schreibe ihn in Register \textit{Rd}, wobei die restlichen Bits auf $0$ gesetzt werden. \\
+			lhu Rd, Imm(Rs) & Lade einen 16-Bit-Wert von der Adresse $Imm+Rs$ und schreibe ihn in Register \textit{Rd}, wobei die restlichen Bits auf $0$ gesetzt werden. \\
+			sb  Rt, Imm(Rs) & Schreibe die untersten 8\,Bit von \textit{Rt} an die Adresse $Imm+Rs$. \\
+			sh  Rt, Imm(Rs) & Schreibe die untersten 16\,Bit von \textit{Rt} an die Adresse $Imm+Rs$. \\
+			sw  Rt, Imm(Rs) & Schreibe den 32\,Bit breiten Inhalt von \textit{Rt} an die Adresse $Imm+Rs$. \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	% -----------------------------------------------------------------------
+	\section{Spezielle Befehle}
+	
+	Außer den hier aufgeführten Befehlen gibt es noch weitere, die aber im Rahmen der Vorlesung und Übung \textit{Systemnahe Informatik} keine Rolle spielen.
+	
+	\begin{center}
+		\begin{tabular}{>{\ttfamily}lp{11cm}}
+			\toprule
+			\normalfont\textbf{Befehl} & \textbf{Beschreibung} \\
+			\midrule
+			nop          & No Operation: führe einen Takt lang nichts aus. \\
+			scall        & Rufe eine Betriebssystemfunktion auf. Siehe Anhang~B. \\
+			lui   Rd, ImmU & Schiebt \textit{ImmU} um 12\,Bit nach links (Multiplikation mit 4096) und schreibt diesen Wert in \textit{Rd}. \\
+			auipc Rd, ImmU & Schiebt \textit{ImmU} um 12\,Bit nach links (Multiplikation mit 4096), addiert den Programmzähler \texttt{pc} und schreibt das Ergebnis in \textit{Rd}. \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	% -----------------------------------------------------------------------
+	\newpage
+	\appendix
+	
+	\section{Registernamen}
+	
+	Grundsätzlich sind alle Register außer Register~0 (\texttt{zero}) gleichberechtigt, aber durch die ABI (Application Binary Interface) und die Calling Convention bekommen sie eine empfohlene Verwendung, die sich auch im Namen widerspiegelt.
+	
+	\begin{center}
+		\begin{tabular}{clp{7cm}}
+			\toprule
+			\textbf{Nummer} & \textbf{Name} & \textbf{Beschreibung} \\
+			\midrule
+			0     & \texttt{zero}       & immer 0 \\
+			1     & \texttt{ra}         & Rücksprungadresse \\
+			2     & \texttt{sp}         & Stack Pointer \\
+			3     & \texttt{gp}         & Global Pointer \\
+			4     & \texttt{tp}         & Thread Pointer \\
+			5--7  & \texttt{t0--t2}     & für temporäre Werte \\
+			8     & \texttt{fp}         & Frame Pointer \\
+			9     & \texttt{s1}         & zu sicherndes Register \\
+			10--11 & \texttt{a0--a1}   & Rückgabewerte bzw. Funktionsparameter \\
+			12--17 & \texttt{a2--a7}   & Funktionsparameter \\
+			18--27 & \texttt{s2--s11}  & Register, die gesichert werden müssen \\
+			28--31 & \texttt{t3--t6}   & für temporäre Werte \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+	% -----------------------------------------------------------------------
+	\section{System-Calls}
+	
+	Im riscVivid-Simulator werden einige wenige System-Calls unterstützt, um mit dem Betriebssystem bzw. dem Benutzer in sehr eingeschränkter Weise zu kommunizieren.
+	Ihre Verwendung entspricht der Linux-Spezifikation für den RISC-V.
+	
+	System-Calls werden durch die Instruktion \texttt{scall} aufgerufen.
+	Die Nummer der gewünschten Funktion wird im Register \texttt{a7} gespeichert und eventuell nötige weitere Parameter in den Registern \texttt{a0} bis \texttt{a6}.
+	
+	\begin{center}
+		\begin{tabular}{clp{2.5cm}p{7cm}}
+			\toprule
+			\textbf{a7} & \textbf{Linux-Name} & \textbf{Parameter} & \textbf{Beschreibung} \\
+			\midrule
+			63 & \texttt{read} & \texttt{a0=0} \newline \texttt{a1=Adresse} \newline \texttt{a2=Länge} &
+				Lese eine Zeile vom Benutzer ein (stdin).
+				Sie wird ab der Adresse \texttt{a1} abgelegt und nach \texttt{a2} Bytes abgeschnitten.
+				Die Anzahl der tatsächlich eingegebenen Zeichen wird in Register \texttt{a0} zurückgeliefert. \\[6pt]
+			64 & \texttt{write} & \texttt{a0=1} \newline \texttt{a1=Adresse} \newline \texttt{a2=Länge} &
+				Gebe eine Zeichenkette aus (stdout).
+				Die \texttt{a2} Bytes ab Adresse \texttt{a1} werden als Zeichenkette interpretiert und ausgegeben. \\[6pt]
+			93 & \texttt{exit} & \texttt{a0=Exitcode} &
+				Beende das Programm mit Exitcode \texttt{a0}. \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	
+\end{document}
